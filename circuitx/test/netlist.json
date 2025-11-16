@@ -1,0 +1,36 @@
+{
+  "components": {
+    "R1": {
+      "type": "resistor",
+      "nodes": [1, 2],
+      "value": 10000
+    },
+    "R2": {
+      "type": "resistor",
+      "nodes": [2, 3],
+      "value": 10000
+    },
+    "C1": {
+      "type": "capacitor",
+      "nodes": [2, 0],
+      "value": 0.0000022
+    },
+    "L1": {
+      "type": "inductor",
+      "nodes": [3, 0],
+      "value": 0.000001
+    },
+    "Vin": {
+      "type": "voltage_source",
+      "nodes": [1, 0],
+      "value": 3.3
+    }
+  },
+  "analysis": {
+    "dc_trasient": {
+      "steps": 20,
+      "dt": 0.1,
+      "plot": false
+    }
+  }
+}

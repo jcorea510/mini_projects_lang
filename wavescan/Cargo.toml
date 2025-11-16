@@ -1,0 +1,10 @@
+[package]
+name = "wavescan"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wavers = "1.5.1"
+plotters = "0.3.3"
+rustfft = "6.4.1"
+clap = { version = "4.5.51", features = ["derive"] }
