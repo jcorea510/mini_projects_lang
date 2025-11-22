@@ -1,16 +1,13 @@
 use macroquad::prelude::*;
-use crate::entities::{player, slimesimple};
-use crate::scenegrap::scenenode::SceneNode;
-use crate::scenegrap::layers::Layers;
-use crate::scenegrap::background::Background;
+
+use crate::ecs::World;
+use crate::entities::identifier::EntityID;
 use crate::resources::textures::TextureManager;
-use std::rc::Rc;
-use std::cell::RefCell;
+use crate::scenegrap::background::Background;
 
 pub struct Game {
-    // scene_graph: Rc<RefCell<SceneNode>>,
-    // world_map: Background,
-    scene_layers: Vec<Layers>,
+    background: Background,
+    world: World,
     _texture_holder: TextureManager,
 }
 
@@ -18,54 +15,65 @@ impl Game {
     pub async fn new() -> Self {
         let mut texture_holder = TextureManager::default();
 
-        let player = player::Player::new(&mut texture_holder).await;
-        let player = Rc::new(
-            RefCell::new(
-                SceneNode::new(
-                    Box::new(player))));
+        // Load textures for entities.
+        texture_holder
+            .add_texture(
+                EntityID::Player.to_string(),
+                "Media/Textures/Slime1/Idle/Slime1_Idle_full.png",
+            )
+            .await;
 
-        let slime = slimesimple::SlimeSimple::new(&mut texture_holder).await;
-        let slime = Rc::new(
-            RefCell::new(
-                SceneNode::new(
-                    Box::new(slime))));
+        texture_holder
+            .add_texture(
+                EntityID::SlimeSimple.to_string(),
+                "Media/Textures/Slime2/Idle/Slime2_Idle_full.png",
+            )
+            .await;
 
+        let player_texture = texture_holder
+            .get_texture(&EntityID::Player.to_string())
+            .clone();
 
-        let slime2 = slimesimple::SlimeSimple::new(&mut texture_holder).await;
-        let slime2 = Rc::new(
-            RefCell::new(
-                SceneNode::new(
-                    Box::new(slime2))));
+        let slime_texture = texture_holder
+            .get_texture(&EntityID::SlimeSimple.to_string())
+            .clone();
 
-        let slime3 = slimesimple::SlimeSimple::new(&mut texture_holder).await;
-        let slime3 = Rc::new(
-            RefCell::new(
-                SceneNode::new(
-                    Box::new(slime3))));
+        // Build ECS world and spawn entities.
+        let mut world = World::new();
+        let player_entity = world.spawn_player(player_texture);
 
-        SceneNode::add_child(&player ,&slime);
-        SceneNode::add_child(&slime ,&slime2);
-        SceneNode::add_child(&slime ,&slime3);
+        // Three simple chaser slimes.
+        let _slime1 = world.spawn_chaser_slime(slime_texture.clone(), player_entity);
+        let _slime2 = world.spawn_chaser_slime(slime_texture.clone(), player_entity);
+        let _slime3 = world.spawn_chaser_slime(slime_texture.clone(), player_entity);
 
-        let world_map = Background::new(&mut texture_holder).await;
+        // Background (still drawn as a separate layer behind everything).
+        let background = Background::new(&mut texture_holder).await;
 
-        let scene_layers = vec![Layers::Background(world_map), Layers::Entities(player.clone())];
         Self {
-            scene_layers,
-            _texture_holder: texture_holder
+            background,
+            world,
+            _texture_holder: texture_holder,
         }
     }
 
     pub async fn run(&mut self) {
         loop {
             clear_background(BLACK);
-            for layer in self.scene_layers.iter() {
-                layer.update(get_frame_time());
-                layer.draw();
-            }
+
+            let dt = get_frame_time();
+
+            // Background
+            self.background.draw();
+
+            // ECS systems: input, AI, animation, rendering.
+            self.world.system_player_input();
+            self.world.system_chase_ai();
+            self.world.system_animate(dt);
+            self.world.system_render();
+
             draw_fps();
             next_frame().await
         }
     }
 }
-
