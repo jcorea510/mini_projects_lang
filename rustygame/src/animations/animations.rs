@@ -1,5 +1,6 @@
 use macroquad::{math::Rect, texture::Texture2D};
 
+#[derive(Copy, Clone)]
 pub enum Directions {
     Down,
     Up,

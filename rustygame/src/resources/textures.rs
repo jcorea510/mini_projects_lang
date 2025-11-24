@@ -1,22 +1,30 @@
-use std::default::Default;
+use std::{default::Default};
 use std::collections::HashMap;
-use macroquad::texture::{Texture2D, load_texture};
 use std::rc::Rc;
+
+use macroquad::texture::Texture2D;
 
 #[derive(Default)]
 pub struct TextureManager {
-    holder: HashMap<String, Rc<Texture2D>>
+    pub(crate) holder: HashMap<String, Rc<HashMap<String, Rc<Texture2D>>>>,
 }
 
 impl TextureManager {
-    pub async fn add_texture(&mut self, id: String, path: &str) {
-        if let std::collections::hash_map::Entry::Vacant(e) = self.holder.entry(id) {
-               let texture = load_texture(path).await.unwrap();
-               e.insert(Rc::new(texture));
-        }
+    /// Register a group of textures for a given logical ID.
+    /// The caller is responsible for loading the textures beforehand.
+    pub fn add_textures(&mut self, id: String, textures: HashMap<String, Rc<Texture2D>>) {
+        self.holder.insert(id, Rc::new(textures));
     }
 
-    pub fn get_texture(&self, id: &String) -> &Rc<Texture2D> {
-        self.holder.get(id).unwrap()
+    /// Get the full texture map for a given ID (e.g. all states for an entity type).
+    pub fn get_textures(&self, id: &str) -> Option<Rc<HashMap<String, Rc<Texture2D>>>> {
+        self.holder.get(id).cloned()
+    }
+
+    /// Get a single texture for a given ID and state.
+    pub fn get_texture(&self, id: &str, state: &str) -> Option<Rc<Texture2D>> {
+        self.holder
+            .get(id)
+            .and_then(|states| states.get(state).cloned())
     }
 }

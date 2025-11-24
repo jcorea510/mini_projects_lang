@@ -4,8 +4,8 @@ use std::fmt;
 pub enum EntityID {
     Player,
     SlimeSimple,
-    // _SlimeFuego,
-    // _SlimeFantasma,
+    SlimeCold,
+    SlimeFire,
 }
 
 impl fmt::Display for EntityID {
@@ -13,6 +13,8 @@ impl fmt::Display for EntityID {
         let id = match self {
             EntityID::Player => "Player",
             EntityID::SlimeSimple => "SlimeSimple",
+            EntityID::SlimeCold=> "SlimeCold",
+            EntityID::SlimeFire => "SlimeFire",
         };
         write!(f, "{id}")
     }

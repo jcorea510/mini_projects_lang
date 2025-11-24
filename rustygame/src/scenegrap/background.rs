@@ -1,12 +1,15 @@
-use std::rc::Rc;
+use std::collections::HashMap;
 use std::fmt;
-use macroquad::texture::{Texture2D, draw_texture};
+use std::rc::Rc;
+
 use macroquad::color::WHITE;
+use macroquad::texture::{draw_texture, load_texture, Texture2D};
+
 use crate::resources::textures::TextureManager;
 
 #[derive(PartialEq, Eq, Hash)]
 pub enum BackgroundID {
-    Jungle,                   
+    Jungle,
 }
 
 impl fmt::Display for BackgroundID {
@@ -24,17 +27,23 @@ pub struct Background {
 
 impl Background {
     pub async fn new(texture_holder: &mut TextureManager) -> Self {
-        texture_holder
-            .add_texture(
-                BackgroundID::Jungle.to_string(),
-                "Media/Textures/Jungle.png",
-            )
-            .await;
-        let texture_path = texture_holder.get_texture(&BackgroundID::Jungle.to_string());
-        Self {
-            sprite: texture_path.clone(),
-        }
+        // Treat the background as a single-state texture group with state "Default".
+        let mut textures = HashMap::new();
+        let jungle = load_texture("Media/Textures/Jungle.png").await.unwrap();
+        textures.insert("Default".to_string(), Rc::new(jungle));
+        texture_holder.add_textures(BackgroundID::Jungle.to_string(), textures);
+
+        let texture_map = texture_holder
+            .get_textures(&BackgroundID::Jungle.to_string())
+            .expect("background textures should be loaded");
+        let sprite = texture_map
+            .get("Default")
+            .expect("background default texture should exist")
+            .clone();
+
+        Self { sprite }
     }
+
     pub fn draw(&self) {
         draw_texture(&self.sprite.clone(), 0.0, 0.0, WHITE);
     }
