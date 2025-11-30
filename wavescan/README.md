@@ -35,4 +35,4 @@ cargo build
 ./target/debug/wavescan --input ./resources/fubuki.wav
 ```
 
-![](./resources/fubuki-noise-tui.png)
+![](./resources/fubuki-noises-tui.png)
