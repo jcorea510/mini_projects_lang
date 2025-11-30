@@ -8,3 +8,7 @@ wavers = "1.5.1"
 plotters = "0.3.3"
 rustfft = "6.4.1"
 clap = { version = "4.5.51", features = ["derive"] }
+ratatui = "0.29.0"
+ratatui-image = "8.0.2"
+image = "0.25.9"
+tui-checkbox = "=0.3.8"
