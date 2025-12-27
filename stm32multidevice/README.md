@@ -1,6 +1,6 @@
 # stm32multidevice
 
-https://github.com/user-attachments/assets/22430d8c-de46-4a15-a13c-bcaadd0a7095
+https://github.com/user-attachments/assets/d35640fc-b94d-440d-af18-d244fd55ea62
 
 A bunch of controls for multiple devices connected to the same
 STM32F103COT6 microcontroller. All task for each device run in parallel
