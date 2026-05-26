@@ -1,0 +1,7 @@
+yolo11n.pt
+yolo11n-cls.pt
+runs/
+dataset/
+models/
+
+app/build/
