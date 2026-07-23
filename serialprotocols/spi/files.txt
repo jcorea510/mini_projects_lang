@@ -1,0 +1,6 @@
+src/spi_tx.sv
+src/spi_rx.sv
+src/spi_controller.sv
+src/spi_peripheral.sv
+src/spi_top.sv
+tb/spi_top_tb.sv
